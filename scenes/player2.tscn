@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://bg32tkh803kg"]
+[gd_scene load_steps=49 format=3 uid="uid://bg32tkh803kg"]
 
 [ext_resource type="Texture2D" uid="uid://6kbw5bsqwoqs" path="res://assets/free-pixel-art-tiny-hero-sprites/2 Owlet_Monster/Owlet_Monster_Attack1_4.png" id="1_8k5hr"]
 [ext_resource type="Script" path="res://scripts/player2_controller.gd" id="1_gdpkh"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dqgjm0pyslmnw" path="res://assets/free-pixel-art-tiny-hero-sprites/2 Owlet_Monster/Owlet_Monster_Run_6.png" id="2_x22m1"]
 [ext_resource type="Texture2D" uid="uid://c4qwdl6cg7w8l" path="res://assets/free-pixel-art-tiny-hero-sprites/2 Owlet_Monster/Owlet_Monster_Jump_8.png" id="4_5c23i"]
 [ext_resource type="Texture2D" uid="uid://nikeugwsghnn" path="res://assets/free-pixel-art-tiny-hero-sprites/2 Owlet_Monster/Owlet_Monster_Death_8.png" id="4_86tih"]
+[ext_resource type="Texture2D" uid="uid://cr3gsbswscvva" path="res://assets/free-pixel-art-tiny-hero-sprites/2 Owlet_Monster/Owlet_Monster_Death_8_BAD.png" id="8_f5bly"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3k0t4"]
 atlas = ExtResource("1_8k5hr")
@@ -151,6 +152,14 @@ region = Rect2(128, 0, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_qhsq4"]
 atlas = ExtResource("2_x22m1")
 region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xmpd2"]
+atlas = ExtResource("8_f5bly")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u1x8f"]
+atlas = ExtResource("4_5c23i")
+region = Rect2(32, 0, 32, 32)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_qty1l"]
 animations = [{
@@ -306,10 +315,18 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_rl5sl")
+"texture": SubResource("AtlasTexture_xmpd2")
 }],
 "loop": true,
 "name": &"skid",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u1x8f")
+}],
+"loop": true,
+"name": &"stopping",
 "speed": 5.0
 }]
 
@@ -323,18 +340,22 @@ script = ExtResource("1_gdpkh")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_qty1l")
-animation = &"idle"
+animation = &"skid"
 
 [node name="RayDown" type="RayCast2D" parent="."]
 
 [node name="RayUp" type="RayCast2D" parent="."]
 rotation = 3.14159
+target_position = Vector2(0, 1000)
 
 [node name="RayRight" type="RayCast2D" parent="."]
-rotation = -1.5708
+position = Vector2(0, 14)
+target_position = Vector2(5000, 0)
 
 [node name="RayLeft" type="RayCast2D" parent="."]
-rotation = 1.5708
+position = Vector2(0, 14)
+rotation = 3.14159
+target_position = Vector2(5000, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, 4)
