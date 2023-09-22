@@ -6,6 +6,7 @@ var gravity : int = ProjectSettings.get_setting("physics/2d/default_gravity")
 var isJumping = false
 var walkTimer = false
 var waitTimer = false
+var res
 
 
 
@@ -13,9 +14,8 @@ var waitTimer = false
 
 
 func leftRight():
-	var res
 	var rng = RandomNumberGenerator.new()
-	var walkWait = floor(rng.randf_range(1.0, 2.0))
+	var walkWait = floor(rng.randf_range(3.0, 6.0))
 	if walkTimer == false:
 		walkTimer = true
 		
@@ -28,8 +28,29 @@ func leftRight():
 		print(res)
 		return res
 		queue_free()
+	if waitTimer == true:
+		waitTimer = false
+		res = "wait"
+		await get_tree().create_timer(walkWait).timeout
+		walkTimer = false
+		print(res)
+		return res
+		queue_free()
 		
-	
+		
+		
+func waiting():
+	var rng = RandomNumberGenerator.new()
+	var walkWait = floor(rng.randf_range(1.0, 2.0))
+	if waitTimer == true:
+		waitTimer = false
+		res = "wait"
+		await get_tree().create_timer(walkWait).timeout
+		waitTimer = true
+		print(res)
+		return res
+		queue_free()
+
 func direction(dir):
 	if dir == "left":
 #		self.position.x -= 20
