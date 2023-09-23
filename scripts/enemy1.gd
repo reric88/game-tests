@@ -20,6 +20,7 @@ var xRight
 var xLeft
 var rjRight
 var rjLeft
+var chasing
 
 func _ready():
 	set_process(true)
@@ -81,6 +82,8 @@ func _physics_process(delta):
 	rjLeft = $RayJumpLeft.is_colliding()
 	var dir = await leftRight()
 	var isJumping = false
+	var player = %player2
+	var distanceToPlayer = global_position.distance_to(player.position)
 #	print("Top:", yUp, ", Bottom:", yDown, ", Left:", xLeft, ", Right:", xRight)
 	velocity.x = hspd
 	
@@ -97,25 +100,34 @@ func _physics_process(delta):
 	if hspd < 0 && xLeft == 0 && isJumping == false:
 		hspd = 50
 	
-	# MOVE RIGHT
-	if dir == "right":
-		if xRight >= 10:
+	if distanceToPlayer < 100:
+		chasing = true
+	else:
+		chasing = false
+	
+	if chasing == true:
+		if player.position.x < global_position.x:
+			hspd = -50
+		if player.position.x > global_position.x:
 			hspd = 50
-		
-	# MOVE LEFT
-	if dir == "left":
-		if xLeft != 0:
-			hspd = -50
-			if hspd <= -100:
-				hspd = -100
-		if xLeft >= 0 && hspd <= -50:
-			hspd = -50
-	print(xLeft)
+			
+	if chasing == false:	
+		# MOVE RIGHT
+		if dir == "right":
+			if xRight >= 10:
+				hspd = 50
+			
+		# MOVE LEFT
+		if dir == "left":
+			if xLeft != 0:
+				hspd = -50
+				if hspd <= -100:
+					hspd = -100
+			if xLeft >= 0 && hspd <= -50:
+				hspd = -50
+#		print(xLeft)
 	
 	if isJumping == false:
-#		var thspd = hspd
-#		if thspd < 0:
-#			thspd = thspd * -1
 		if yDown == 0:
 			if hspd != 0:
 				if rjRight == false && xRight < 5:
@@ -137,6 +149,21 @@ func _physics_process(delta):
 	if dir == "wait":
 		hspd = 0	
 
+#	if self.position.y >= %player.position.y - 50 || self.position.y <= %player.position.y + 50 && self.position.x 
+
+#	if self.global_position.y - %player2.global_position.y < 50 && self.global_position.x - %player2.global_position.x < 50:
+#		chasing = true
+#		hspd = 50
+#		print("chase left")
+#	else:
+#		chasing = false
+#
+#	if %player2.global_position.y - self.global_position.y < 50 && %player2.global_position.x - self.global_position.x < 50:
+#		chasing = true
+#		hspd = 50
+#		print("chase right")
+#	else: 
+#		chasing = false
 				
 	if not is_on_floor():
 		velocity.y += gravity * delta
