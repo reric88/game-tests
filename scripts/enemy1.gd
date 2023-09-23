@@ -92,6 +92,10 @@ func _physics_process(delta):
 		$AnimatedSprite2D.play("walk")
 	if hspd == 0:
 		$AnimatedSprite2D.play("idle")
+	if hspd > 0 && xRight == 0 && isJumping == false:
+		hspd = -50	
+	if hspd < 0 && xLeft == 0 && isJumping == false:
+		hspd = 50
 	
 	# MOVE RIGHT
 	if dir == "right":
@@ -109,18 +113,22 @@ func _physics_process(delta):
 	print(xLeft)
 	
 	if isJumping == false:
-				
-		if rjRight == true && xRight < 10 && hspd > 0 && yDown == 0 || rjRight == false && xRight == 10 && hspd > 0 && yDown == 0:
-			isJumping = true
-			velocity.y -= 200
-			$AnimatedSprite2D.play("jump")
-			print("jump")
-		
-		if rjLeft == true && xLeft == -10 && hspd < 0 && yDown == 0 || rjLeft == false && xLeft > -10 && hspd < 0 && yDown == 0:
-			isJumping = true
-			velocity.y -= 200
-			$AnimatedSprite2D.play("jump")
-			print("jump")
+#		var thspd = hspd
+#		if thspd < 0:
+#			thspd = thspd * -1
+		if yDown == 0:
+			if hspd != 0:
+				if rjRight == false && xRight < 5:
+					isJumping = true
+					velocity.y -= 250
+					$AnimatedSprite2D.play("jump")
+					print("jump")
+			
+				if rjLeft == false && xLeft > -5:
+					isJumping = true
+					velocity.y -= 250
+					$AnimatedSprite2D.play("jump")
+					print("jump")
 	
 	if yDown > 0 && isJumping == true:
 		isJumping = false
