@@ -6,6 +6,7 @@ var height : int = 200
 var grounded = true
 var isJumping = false
 var dblJumping = false
+var face
 
 
 func isColliding():
@@ -44,8 +45,10 @@ func _physics_process(delta):
 	
 	if spd > 0:
 		$AnimatedSprite2D.set_flip_h(false)
+		face = "right"
 	if spd < 0:
 		$AnimatedSprite2D.set_flip_h(true)
+		face = "left"
 		
 	
 	# move right
@@ -135,4 +138,34 @@ func _physics_process(delta):
 	if yDown == 0 && isJumping == true:
 		isJumping = false
 		dblJumping = false
+		
+		
+		
+		
+	if isColliding():
+		var faceVector
+		var collisions
+		if face == "left":
+			faceVector = Vector2(-10, -20)
+		else:
+			faceVector = Vector2(10, -20)
+		collisions = move_and_collide(faceVector)
+		collisions
+#	if player.position.x < global_position.x && $RayLeft.get_collider_rid() == %pinky.get_rid():
+#		contactTimeout = true
+#		hspd = 0
+#		%player.velocity.y -= 100
+#		%player.velocity.x -= 100
+#
+#	if player.position.x > global_position.x && $RayRight.get_collider_rid() == %pinky.get_rid():
+#		contactTimeout = true
+#		hspd = 0
+#		%player.velocity.y -= 100
+#		%player.velocity.x += 100
+#
+#	if player.position.y > global_position.y && $RayDown.get_collider_rid() == %pinky.get_rid():
+#		contactTimeout = true
+#		hspd = 0
+#		%player.velocity.x -= 100
+		
 	move_and_slide()

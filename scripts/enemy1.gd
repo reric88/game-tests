@@ -21,6 +21,7 @@ var xLeft
 var rjRight
 var rjLeft
 var chasing
+var contactTimeout
 
 func _ready():
 	set_process(true)
@@ -64,6 +65,10 @@ func leftRight():
 		walkTimer = false
 		print(res)
 		return res
+		
+func touchTimer():
+		await get_tree().create_timer(1).timeout
+		contactTimeout = false
 
 func _physics_process(delta):
 	xpos = self.position.x
@@ -95,75 +100,96 @@ func _physics_process(delta):
 		$AnimatedSprite2D.play("walk")
 	if hspd == 0:
 		$AnimatedSprite2D.play("idle")
-	if hspd > 0 && xRight == 0 && isJumping == false:
-		hspd = -50	
-	if hspd < 0 && xLeft == 0 && isJumping == false:
-		hspd = 50
-	
-	if distanceToPlayer < 100:
-		chasing = true
-	else:
-		chasing = false
-	
-	if chasing == true:
-		if player.position.x < global_position.x:
-			hspd = -50
-		if player.position.x > global_position.x:
-			hspd = 50
-			
-	if chasing == false:	
-		# MOVE RIGHT
-		if dir == "right":
-			if xRight >= 10:
-				hspd = 50
-			
-		# MOVE LEFT
-		if dir == "left":
-			if xLeft != 0:
-				hspd = -50
-				if hspd <= -100:
-					hspd = -100
-			if xLeft >= 0 && hspd <= -50:
-				hspd = -50
-#		print(xLeft)
-	
-	if isJumping == false:
-		if yDown == 0:
-			if hspd != 0:
-				if rjRight == false && xRight < 5:
-					isJumping = true
-					velocity.y -= 250
-					$AnimatedSprite2D.play("jump")
-					print("jump")
-			
-				if rjLeft == false && xLeft > -5:
-					isJumping = true
-					velocity.y -= 250
-					$AnimatedSprite2D.play("jump")
-					print("jump")
-	
-	if yDown > 0 && isJumping == true:
-		isJumping = false
 		
-	# WAITING
-	if dir == "wait":
-		hspd = 0	
-
-#	if self.position.y >= %player.position.y - 50 || self.position.y <= %player.position.y + 50 && self.position.x 
-
-#	if self.global_position.y - %player2.global_position.y < 50 && self.global_position.x - %player2.global_position.x < 50:
-#		chasing = true
-#		hspd = 50
-#		print("chase left")
-#	else:
-#		chasing = false
-#
-#	if %player2.global_position.y - self.global_position.y < 50 && %player2.global_position.x - self.global_position.x < 50:
-#		chasing = true
-#		hspd = 50
-#		print("chase right")
-#	else: 
-#		chasing = false
+	if contactTimeout == false:
+		if hspd > 0 && xRight == 0 && isJumping == false:
+			hspd = -50	
+		if hspd < 0 && xLeft == 0 && isJumping == false:
+			hspd = 50
+		
+		if distanceToPlayer < 100:
+			chasing = true
+		else:
+			chasing = false
+		
+		if chasing == true && contactTimeout == false:
+			if player.position.x < global_position.x:
+				hspd = -50
+			if player.position.x > global_position.x:
+				hspd = 50
+				
+#		print($RayRight.get_collider_rid())
+#		print($RayLeft.get_collider())
+		if chasing == false:	
+			# MOVE RIGHT
+			if dir == "right":
+				if xRight >= 10:
+					hspd = 50
+				
+			# MOVE LEFT
+			if dir == "left":
+				if xLeft != 0:
+					hspd = -50
+					if hspd <= -100:
+						hspd = -100
+				if xLeft >= 0 && hspd <= -50:
+					hspd = -50
+	#		print(xLeft)
+#		player2:<CharacterBody2D#30551311515>
+#		RID(14014478287851)
+		
+		
+		if isJumping == false:
+			if yDown == 0:
+				if hspd != 0:
+					if rjRight == false && xRight < 5 && $RayRight.get_collider_rid() != %player2.get_rid():
+						isJumping = true
+						velocity.y -= 250
+						$AnimatedSprite2D.play("jump")
+						print("jump")
+				
+					if rjLeft == false && xLeft > -5 && $RayLeft.get_collider_rid() != %player2.get_rid():
+						isJumping = true
+						velocity.y -= 250
+						$AnimatedSprite2D.play("jump")
+						print("jump")
+						
+						
+		
+		if yDown > 0 && isJumping == true:
+			isJumping = false
+			
+		# WAITING
+		if dir == "wait":
+			hspd = 0	
+		
+		if player.position.x < global_position.x && $RayLeft.get_collider_rid() == %player2.get_rid():
+			contactTimeout = true
+			hspd = 0
+			%player.velocity.y -= 100
+			%player.velocity.x -= 100
+			
+		if player.position.x > global_position.x && $RayRight.get_collider_rid() == %player2.get_rid():
+			contactTimeout = true
+			hspd = 0
+			%player.velocity.y -= 100
+			%player.velocity.x += 100
+			
+		if player.position.y > global_position.y && $RayDown.get_collider_rid() == %player2.get_rid():
+			contactTimeout = true
+			hspd = 0
+			%player.velocity.x -= 100
+		
+#	for i in range(get_slide_collision_count() - 1):
+#		var collision = get_slide_collision(i)
+#		print(collision)
+#		<KinematicCollision2D#-9223372005246499413>
+#		print(collision.get_collider_rid())
+	if distanceToPlayer > 200:
+		contactTimeout = false
+		
+	if contactTimeout == true:
+		await touchTimer()
 				
 	if not is_on_floor():
 		velocity.y += gravity * delta
