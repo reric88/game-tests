@@ -176,3 +176,11 @@ target_position = Vector2(5000, 0)
 position = Vector2(0, 14)
 rotation = 3.14159
 target_position = Vector2(5000, 0)
+
+[node name="RayJumpRight" type="RayCast2D" parent="."]
+position = Vector2(8, 16)
+target_position = Vector2(15, -50)
+
+[node name="RayJumpLeft" type="RayCast2D" parent="."]
+position = Vector2(-8, 16)
+target_position = Vector2(-15, -50)

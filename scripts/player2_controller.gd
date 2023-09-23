@@ -113,7 +113,7 @@ func _physics_process(delta):
 		
 	# gravity
 #	print("isJumping: ", isJumping, ", dblJumping: ", dblJumping, ", grounded: ", grounded, ", yDown: ", yDown)
-#	print(velocity.y)
+#	print(xRight)
 	if not is_on_floor():
 		velocity.y += gravity * delta
 	# jump
