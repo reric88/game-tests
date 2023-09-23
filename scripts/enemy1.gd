@@ -26,30 +26,30 @@ func leftRight():
 			res = "right"
 		waitTimer = true
 		print(res)
-		return res
 		queue_free()
+		return res
 	if waitTimer == true:
 		waitTimer = false
 		res = "wait"
 		await get_tree().create_timer(walkWait).timeout
 		walkTimer = false
 		print(res)
-		return res
 		queue_free()
-		
-		
-		
-func waiting():
-	var rng = RandomNumberGenerator.new()
-	var walkWait = floor(rng.randf_range(1.0, 2.0))
-	if waitTimer == true:
-		waitTimer = false
-		res = "wait"
-		await get_tree().create_timer(walkWait).timeout
-		waitTimer = true
-		print(res)
 		return res
-		queue_free()
+		
+		
+		
+#func waiting():
+#	var rng = RandomNumberGenerator.new()
+#	var walkWait = floor(rng.randf_range(1.0, 2.0))
+#	if waitTimer == true:
+#		waitTimer = false
+#		res = "wait"
+#		await get_tree().create_timer(walkWait).timeout
+#		waitTimer = true
+#		print(res)
+#		return res
+#		queue_free()
 
 func direction(dir):
 	if dir == "left":
