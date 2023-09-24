@@ -163,22 +163,22 @@ func _physics_process(delta):
 		if dir == "wait":
 			hspd = 0	
 		
-		if player.position.x < global_position.x && $RayLeft.get_collider_rid() == %player2.get_rid():
-			contactTimeout = true
-			hspd = 0
-			%player.velocity.y -= 100
-			%player.velocity.x -= 100
-			
-		if player.position.x > global_position.x && $RayRight.get_collider_rid() == %player2.get_rid():
-			contactTimeout = true
-			hspd = 0
-			%player.velocity.y -= 100
-			%player.velocity.x += 100
-			
-		if player.position.y > global_position.y && $RayDown.get_collider_rid() == %player2.get_rid():
-			contactTimeout = true
-			hspd = 0
-			%player.velocity.x -= 100
+#		if player.position.x < global_position.x && $RayLeft.get_collider_rid() == %player2.get_rid():
+#			contactTimeout = true
+#			hspd = 0
+#			%player.velocity.y -= 100
+#			%player.velocity.x -= 100
+#
+#		if player.position.x > global_position.x && $RayRight.get_collider_rid() == %player2.get_rid():
+#			contactTimeout = true
+#			hspd = 0
+#			%player.velocity.y -= 100
+#			%player.velocity.x += 100
+#
+#		if player.position.y > global_position.y && $RayDown.get_collider_rid() == %player2.get_rid():
+#			contactTimeout = true
+#			hspd = 0
+#			%player.velocity.x -= 100
 		
 #	for i in range(get_slide_collision_count() - 1):
 #		var collision = get_slide_collision(i)

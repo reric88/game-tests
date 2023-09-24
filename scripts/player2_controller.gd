@@ -7,7 +7,16 @@ var grounded = true
 var isJumping = false
 var dblJumping = false
 var face
+var audio_player
+var jump1 = load("res://sounds/344501__jeremysykes__jump04.wav")
+var jump2 = load("res://sounds/270318__littlerobotsoundfactory__jump_02.wav")
 
+func _ready():
+	audio_player = $AudioStreamPlayer
+	
+func sfx(sound):
+	audio_player.stream = sound
+	audio_player.play()
 
 func isColliding():
 	for i in get_slide_collision_count():
@@ -122,10 +131,12 @@ func _physics_process(delta):
 	# jump
 	if pressJump:
 		if isJumping == false:
+			sfx(jump1)
 			isJumping = true
 			velocity.y -= 300
 			
 		if isJumping == true && dblJumping == false:
+			sfx(jump2)
 			dblJumping = true
 			velocity.y = 0
 			velocity.y -= 300
@@ -142,30 +153,30 @@ func _physics_process(delta):
 		
 		
 		
-	if isColliding():
-		var faceVector
-		var collisions
-		if face == "left":
-			faceVector = Vector2(-10, -20)
-		else:
-			faceVector = Vector2(10, -20)
-		collisions = move_and_collide(faceVector)
-		collisions
-#	if player.position.x < global_position.x && $RayLeft.get_collider_rid() == %pinky.get_rid():
-#		contactTimeout = true
-#		hspd = 0
-#		%player.velocity.y -= 100
-#		%player.velocity.x -= 100
-#
-#	if player.position.x > global_position.x && $RayRight.get_collider_rid() == %pinky.get_rid():
-#		contactTimeout = true
-#		hspd = 0
-#		%player.velocity.y -= 100
-#		%player.velocity.x += 100
-#
-#	if player.position.y > global_position.y && $RayDown.get_collider_rid() == %pinky.get_rid():
-#		contactTimeout = true
-#		hspd = 0
-#		%player.velocity.x -= 100
+#	if isColliding():
+#		var faceVector
+#		var collisions
+#		if face == "left":
+#			faceVector = Vector2(-10, -20)
+#		else:
+#			faceVector = Vector2(10, -20)
+#		collisions = move_and_collide(faceVector)
+
+	if $RayRight.get_collider_rid() == %pinky.get_rid() && xRight <= 0:
+		sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+		spd = -200
+		velocity.y += -100
+		print(xRight)
+	if $RayLeft.get_collider_rid() == %pinky.get_rid() && xLeft >= 0:
+		sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+		spd = 200
+		velocity.y += -100
+		print(xLeft)
+	if $RayDown.get_collider_rid() == %pinky.get_rid() && yDown <= 1 && pressJump:
+		sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
+		velocity.y = -400
+		print(yDown)
+	
+
 		
 	move_and_slide()
