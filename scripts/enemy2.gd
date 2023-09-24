@@ -1,11 +1,11 @@
 extends CharacterBody2D
-var hp: int = 50
+var hp: int = 5
 var hspd: int = 3
 var vspd: int = 200
 var gravity : int = ProjectSettings.get_setting("physics/2d/default_gravity")
 var walkTimer = false
 var waitTimer = false
-var res
+var res = "wait"
 var xpos
 var ypos
 var xprev
@@ -30,6 +30,7 @@ var rjRight
 var rjLeft
 var chasing
 var contactTimeout
+var face
 
 func _ready():
 	contactTimeout = false
@@ -65,14 +66,12 @@ func leftRight():
 			else:
 				res = "left"
 		waitTimer = true
-		print(res)
 		return res
 	if waitTimer == true:
 		waitTimer = false
 		res = "wait"
 		await get_tree().create_timer(walkWait).timeout
 		walkTimer = false
-		print(res)
 		return res
 		
 func touchTimer():
@@ -92,8 +91,8 @@ func _physics_process(delta):
 	rayLeft2 = $RayLeft2.get_collision_point()
 	rayRight = $RayRight.get_collision_point()
 	rayRight2 = $RayRight2.get_collision_point()
-	yDown = floor(rayDown.y - (ypos + 18))
-	yDown2 = floor(rayDown2.y - (ypos + 18))
+	yDown = floor(rayDown.y - (ypos + 15))
+	yDown2 = floor(rayDown2.y - (ypos + 15))
 	yUp = floor(rayUp.y - (ypos - 7))
 	yUp2 = floor(rayUp2.y - (ypos - 7))
 	xRight = floor(rayRight.x - (xpos + 4))
@@ -112,9 +111,11 @@ func _physics_process(delta):
 	if hspd > 0:
 		$AnimatedSprite2D.set_flip_h(false)
 		$AnimatedSprite2D.play("walk")
+		face = "right"
 	if hspd < 0:
 		$AnimatedSprite2D.set_flip_h(true)
 		$AnimatedSprite2D.play("walk")
+		face = "left"
 	if hspd == 0:
 		$AnimatedSprite2D.play("idle")
 		
@@ -129,7 +130,6 @@ func _physics_process(delta):
 		else:
 			chasing = false
 			contactTimeout = false
-			print(contactTimeout)
 			if distanceToPlayer < 200 && %player2.get_collision_layer_value(2) == false:
 				hspd = 0
 		
@@ -155,19 +155,23 @@ func _physics_process(delta):
 					hspd = -50
 		
 		if isJumping == false:
+#			print("yDown: ", yDown, ", player distance: ", distanceToPlayer)
+#			print("pinky y: ", self.position.y)
+			
 			if yDown == 0:
 				if hspd != 0:
+					#NEED TO FIX THE RAYS SINCE THEY AREN'T ALIGNED ANYMORE
 					if rjRight == false && xRight < 5 && $RayRight.get_collider_rid() != %player2.get_rid():
 						isJumping = true
 						velocity.y -= 250
 						$AnimatedSprite2D.play("jump")
-						print("jump")
+#						print("jump")
 				
 					if rjLeft == false && xLeft > -5 && $RayLeft.get_collider_rid() != %player2.get_rid():
 						isJumping = true
 						velocity.y -= 250
 						$AnimatedSprite2D.play("jump")
-						print("jump")
+#						print("jump")
 						
 						
 		
@@ -178,34 +182,22 @@ func _physics_process(delta):
 		if dir == "wait":
 			hspd = 0	
 		
-#		if player.position.x < global_position.x && $RayLeft.get_collider_rid() == %player2.get_rid():
-#			contactTimeout = true
-#			hspd = 0
-#			%player.velocity.y -= 100
-#			%player.velocity.x -= 100
-#
-#		if player.position.x > global_position.x && $RayRight.get_collider_rid() == %player2.get_rid():
-#			contactTimeout = true
-#			hspd = 0
-#			%player.velocity.y -= 100
-#			%player.velocity.x += 100
-#
-#		if player.position.y > global_position.y && $RayDown.get_collider_rid() == %player2.get_rid():
-#			contactTimeout = true
-#			hspd = 0
-#			%player.velocity.x -= 100
-		
-#	for i in range(get_slide_collision_count() - 1):
-#		var collision = get_slide_collision(i)
-#		print(collision)
-#		<KinematicCollision2D#-9223372005246499413>
-#		print(collision.get_collider_rid())
+		if $RayDown.get_collider_rid() != %player2.get_rid() && distanceToPlayer < 25 || $RayDown2.get_collider_rid() != %player2.get_rid() && distanceToPlayer < 25:
+			print("hit from top")
+			isJumping = true
+			velocity.y -= 200
+			if face == "left":
+				hspd = 100
+			else:
+				hspd = -100
+	#		print(distanceToPlayer)
 
 	else: 
 		contactTimeout == true
-		hspd = 0
+#		hspd = 0
 		await touchTimer()
-				
+	print(distanceToPlayer)
+
 	if not is_on_floor():
 		velocity.y += gravity * delta
 

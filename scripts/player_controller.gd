@@ -6,15 +6,37 @@ var height : int = 200
 var grounded = true
 var isJumping = false
 var dblJumping = false
-var face
-var audio_player
 var isHit = false
 var hitFrames = false
 var jump1 = load("res://sounds/344501__jeremysykes__jump04.wav")
 var jump2 = load("res://sounds/270318__littlerobotsoundfactory__jump_02.wav")
 var maxhp = 2
 var hp = maxhp
-
+var pressRight
+var pressLeft
+var pressJump
+var face
+var audio_player
+var yDown
+var yUp
+var xRight
+var xLeft
+var yDown2
+var yUp2
+var xRight2
+var xLeft2
+var rayUp
+var rayDown
+var rayLeft
+var rayRight
+var rayUp2
+var rayDown2
+var rayLeft2
+var rayRight2
+var xpos
+var ypos
+var xprev
+var yprev
 
 func _ready():
 	audio_player = $AudioStreamPlayer
@@ -22,12 +44,6 @@ func _ready():
 func sfx(sound):
 	audio_player.stream = sound
 	audio_player.play()
-
-func isColliding():
-	for i in get_slide_collision_count():
-		var col = get_slide_collision(i)
-#		print("Collided with: ", col.get_collider().position.x)
-#		print("Collided with: ", get_wall_normal())
 
 #func invinicible():
 #	if isHit == true:
@@ -79,38 +95,32 @@ func invincible():
 
 
 func _physics_process(delta):
-	var pressRight = Input.is_physical_key_pressed(KEY_D)
-	var pressLeft = Input.is_physical_key_pressed(KEY_A)
-	var pressJump = Input.is_action_just_pressed("jump")
-#	var animRun = $AnimatedSprite2D.play("run")
-#	var animIdle = $AnimatedSprite2D.play("idle")
-#	var animJump = $AnimatedSprite2D.play("jump")
-#	var animSkid = $AnimatedSprite2D.play("skid")
-#	var faceLeft = $AnimatedSprite2D.set_flip_h(true)
-#	var faceRight = $AnimatedSprite2D.set_flip_h(false)
-	var xpos = self.position.x
-	var ypos = self.position.y
-	var xprev = xpos
-	var yprev = ypos
-	var rayUp = $RayUp.get_collision_point()
-	var rayDown = $RayDown.get_collision_point()
-	var rayLeft = $RayLeft.get_collision_point()
-	var rayRight = $RayRight.get_collision_point()
-	var yDown = floor(rayDown.y - (ypos + 15))
-	var yUp = floor(rayUp.y - (ypos - 7))
-	var xRight = floor(rayRight.x - (xpos + 4))
-	var xLeft = floor(rayLeft.x - (xpos - 10))
-	var rayUp2 = $RayUp2.get_collision_point()
-	var rayDown2 = $RayDown2.get_collision_point()
-	var rayLeft2 = $RayLeft2.get_collision_point()
-	var rayRight2 = $RayRight2.get_collision_point()
-	var yDown2 = floor(rayDown2.y - (ypos + 15))
-	var yUp2 = floor(rayUp2.y - (ypos - 7))
-	var xRight2 = floor(rayRight2.x - (xpos + 4))
-	var xLeft2 = floor(rayLeft2.x - (xpos - 10))
+	pressRight = Input.is_physical_key_pressed(KEY_D)
+	pressLeft = Input.is_physical_key_pressed(KEY_A)
+	pressJump = Input.is_action_just_pressed("jump")
+	xpos = self.position.x
+	ypos = self.position.y
+	xprev = xpos
+	yprev = ypos
+	rayUp = $RayUp.get_collision_point()
+	rayDown = $RayDown.get_collision_point()
+	rayLeft = $RayLeft.get_collision_point()
+	rayRight = $RayRight.get_collision_point()
+	rayUp2 = $RayUp2.get_collision_point()
+	rayDown2 = $RayDown2.get_collision_point()
+	rayLeft2 = $RayLeft2.get_collision_point()
+	rayRight2 = $RayRight2.get_collision_point()
+	yDown = floor(rayDown.y - (ypos + 15))
+	yUp = floor(rayUp.y - (ypos - 7))
+	xRight = floor(rayRight.x - (xpos + 4))
+	xLeft = floor(rayLeft.x - (xpos - 10))
+	yDown2 = floor(rayDown2.y - (ypos + 15))
+	yUp2 = floor(rayUp2.y - (ypos - 7))
+	xRight2 = floor(rayRight2.x - (xpos + 4))
+	xLeft2 = floor(rayLeft2.x - (xpos - 10))
 #	print("Top:", yUp, ", Bottom:", yDown, ", Left:", xLeft, ", Right:", xRight)
 #	var ypos = 10
-
+#	print("yUp: ", yUp, " yUp2:", yUp2)
 	velocity.x = spd
 	if hp > 0:
 		if spd > 0:
@@ -233,23 +243,7 @@ func _physics_process(delta):
 			if $RayDown.get_collider_rid() == %pinky.get_rid() && yDown <= 1 && pressJump:
 				sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
 				velocity.y = -400
-			if $RayRight.get_collider_rid() == %pinky2.get_rid() && xRight <= 1 || $RayRight2.get_collider_rid() == %pinky2.get_rid() && xRight2 <= 1:
-				sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
-				spd = -200
-				velocity.y += -100
-				isHit = true
-				hp -= 1
-				invincible()
-			if $RayLeft.get_collider_rid() == %pinky2.get_rid() && xLeft >= 1 || $RayLeft2.get_collider_rid() == %pinky2.get_rid() && xLeft2 >= 1:
-				sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
-				spd = 200
-				velocity.y += -100
-				isHit = true
-				hp -= 1
-				invincible()
-			if $RayDown.get_collider_rid() == %pinky2.get_rid() && yDown <= 1 && pressJump || $RayDown2.get_collider_rid() == %pinky2.get_rid() && yDown2 <= 1 && pressJump:
-				sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
-				velocity.y = -400
+			attacked()
 	
 	if hp <= 0:
 		spd = 0
@@ -259,3 +253,41 @@ func _physics_process(delta):
 			$AnimatedSprite2D.pause()
 		
 	move_and_slide()
+
+
+func attacked():
+#	Hit from the right
+	if $RayRight.get_collider_rid() == %pinky2.get_rid() && xRight <= 1 || $RayRight2.get_collider_rid() == %pinky2.get_rid() && xRight2 <= 1:
+		sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+		spd = -200
+		velocity.y += -100
+		isHit = true
+		hp -= 1
+		invincible()
+		
+#	Hit from the left
+	if $RayLeft.get_collider_rid() == %pinky2.get_rid() && xLeft >= 1 || $RayLeft2.get_collider_rid() == %pinky2.get_rid() && xLeft2 >= 1:
+		sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+		spd = 200
+		velocity.y += -100
+		isHit = true
+		hp -= 1
+		invincible()
+		
+#	Hit from the top
+	if $RayUp.get_collider_rid() == %pinky2.get_rid() && yUp >= -3 || $RayUp2.get_collider_rid() == %pinky2.get_rid() && yUp2 >= -3:
+		sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+		if face == "right":
+			spd = -200
+		else:
+			spd = 200
+		velocity.y += -100
+		isHit = true
+		hp -= 1
+		invincible()
+
+
+
+	if $RayDown.get_collider_rid() == %pinky2.get_rid() && yDown <= 1 && pressJump || $RayDown2.get_collider_rid() == %pinky2.get_rid() && yDown2 <= 1 && pressJump:
+		sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
+		velocity.y = -400

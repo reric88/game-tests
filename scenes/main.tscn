@@ -911,4 +911,4 @@ autoplay = true
 
 [node name="pinky2" parent="." instance=ExtResource("5_05yxc")]
 unique_name_in_owner = true
-position = Vector2(569, -83)
+position = Vector2(434, -177)

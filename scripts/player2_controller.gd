@@ -59,7 +59,6 @@ func _physics_process(delta):
 #	var ypos = 10
 
 	velocity.x = spd
-	
 	if spd > 0:
 		$AnimatedSprite2D.set_flip_h(false)
 		face = "right"
