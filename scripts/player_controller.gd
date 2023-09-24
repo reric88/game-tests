@@ -3,75 +3,259 @@ var spd : int = 0
 var jump_spd : int = 300
 var gravity : int = ProjectSettings.get_setting("physics/2d/default_gravity")
 var height : int = 200
+var grounded = true
 var isJumping = false
+var dblJumping = false
+var face
+var audio_player
+var isHit = false
+var hitFrames = false
+var jump1 = load("res://sounds/344501__jeremysykes__jump04.wav")
+var jump2 = load("res://sounds/270318__littlerobotsoundfactory__jump_02.wav")
+var maxhp = 2
+var hp = maxhp
+
+
+func _ready():
+	audio_player = $AudioStreamPlayer
+	
+func sfx(sound):
+	audio_player.stream = sound
+	audio_player.play()
+
+func isColliding():
+	for i in get_slide_collision_count():
+		var col = get_slide_collision(i)
+#		print("Collided with: ", col.get_collider().position.x)
+#		print("Collided with: ", get_wall_normal())
+
+#func invinicible():
+#	if isHit == true:
+#		var i = 180
+#		var timing = 0.0
+#		var increase = 60.0
+#		var timer = Timer.new()
+#
+#		while i > 0:
+#			if i % 10 == 0:
+#				$AnimatedSprite2D.modulate = Color("TRANSPARENT")
+#			else:
+#				$AnimatedSprite2D.modulate = Color(1, 1, 1)
+#
+#
+#
+#
+#		for i in 180:
+#			print(i)
+#			if i % 10 == 0:
+#				$AnimatedSprite2D.modulate = Color("TRANSPARENT")
+#			else:
+#				$AnimatedSprite2D.modulate = Color(1, 1, 1)
+#		await get_tree().create_timer(3).timeout
+#		isHit = false
+#		$AnimatedSprite2D.modulate = Color(1, 1, 1)
+
+func invincible():
+	if isHit == true:
+		set_collision_layer_value(2, false)
+		var i = 0
+		var time_accumulator = 0
+		
+		while i <= 10:
+			if i % 2 == 0:
+				$AnimatedSprite2D.modulate = Color(1, 1, 1, .3)
+			else:
+				$AnimatedSprite2D.modulate = Color(1, 1, 1)
+			time_accumulator += get_process_delta_time() * 10
+			while time_accumulator >= .5:
+				i += 1
+				time_accumulator -= .5
+#			print(i)
+#			print(time_accumulator)
+			await $AnimatedSprite2D.frame_changed
+		isHit = false
+		$AnimatedSprite2D.modulate = Color(1, 1, 1)
+		set_collision_layer_value(2, true)		
 
 
 func _physics_process(delta):
-#	var rayy = $RayCast2D.get_collision_point()
-#	var ypos = self.position.y
-#	var floorDistance = floor(rayy.y - ypos)
-#	print(floorDistance)
-	var floorDistance = 10
-	
+	var pressRight = Input.is_physical_key_pressed(KEY_D)
+	var pressLeft = Input.is_physical_key_pressed(KEY_A)
+	var pressJump = Input.is_action_just_pressed("jump")
+#	var animRun = $AnimatedSprite2D.play("run")
+#	var animIdle = $AnimatedSprite2D.play("idle")
+#	var animJump = $AnimatedSprite2D.play("jump")
+#	var animSkid = $AnimatedSprite2D.play("skid")
+#	var faceLeft = $AnimatedSprite2D.set_flip_h(true)
+#	var faceRight = $AnimatedSprite2D.set_flip_h(false)
+	var xpos = self.position.x
+	var ypos = self.position.y
+	var xprev = xpos
+	var yprev = ypos
+	var rayUp = $RayUp.get_collision_point()
+	var rayDown = $RayDown.get_collision_point()
+	var rayLeft = $RayLeft.get_collision_point()
+	var rayRight = $RayRight.get_collision_point()
+	var yDown = floor(rayDown.y - (ypos + 15))
+	var yUp = floor(rayUp.y - (ypos - 7))
+	var xRight = floor(rayRight.x - (xpos + 4))
+	var xLeft = floor(rayLeft.x - (xpos - 10))
+	var rayUp2 = $RayUp2.get_collision_point()
+	var rayDown2 = $RayDown2.get_collision_point()
+	var rayLeft2 = $RayLeft2.get_collision_point()
+	var rayRight2 = $RayRight2.get_collision_point()
+	var yDown2 = floor(rayDown2.y - (ypos + 15))
+	var yUp2 = floor(rayUp2.y - (ypos - 7))
+	var xRight2 = floor(rayRight2.x - (xpos + 4))
+	var xLeft2 = floor(rayLeft2.x - (xpos - 10))
+#	print("Top:", yUp, ", Bottom:", yDown, ", Left:", xLeft, ", Right:", xRight)
+#	var ypos = 10
 
-
-	# set speed of player
-	# I will reference spd and SPEED. spd is referencing the variable (positive or negative) 
-	# whereas SPEED will always represent the actual movement speed (always positive)
 	velocity.x = spd
+	if hp > 0:
+		if spd > 0:
+			$AnimatedSprite2D.set_flip_h(false)
+			face = "right"
+		if spd < 0:
+			$AnimatedSprite2D.set_flip_h(true)
+			face = "left"
+			
+		
+		# move right
+		if pressRight:
+			if xRight != 0:
+				spd += 5
+				if spd >= 200:
+					spd = 200
+	#			if yDown < 5:
+	#				$AnimatedSprite2D.play("run")
+	#			else: 
+	#				$AnimatedSprite2D.play("jump")
+			if xRight <= 0 && spd >= 50:
+				spd = 50
+	#		isColliding()
+	#		if not is_on_wall():
+	#			self.position.x += 3
+	#		else:
+	#			self.position.x -= 0
+				
+		# move left
+		if pressLeft:
+			if xLeft != 0:
+				spd -= 5
+				if spd <= -200:
+					spd = -200
+	#			if yDown < 5:
+	#				$AnimatedSprite2D.play("run")
+	#			else: 
+	#				if velocity.y < 0:
+	#					$AnimatedSprite2D.play("fall")
+	#				else:
+						
+			if xLeft >= 0 && spd <= -50:
+				spd = -50
+		
+		if isJumping:
+			$AnimatedSprite2D.play("jump")
+		else:
+			if pressRight && spd >= 5 && velocity.y == 0 || pressLeft && spd <= -5 && velocity.y == 0:
+				$AnimatedSprite2D.play("run")
+			else:
+				if not isJumping && xLeft == 0 || not isJumping && xRight == 0 || not isJumping && spd == 0:
+					$AnimatedSprite2D.play("idle")
+				
+			
+		
+		if not pressLeft && spd <= -5:
+			spd += 5
+			
+			if yDown == 0:
+				if pressRight:
+					$AnimatedSprite2D.play("skid")
+				else:
+					$AnimatedSprite2D.play("stopping")
+				
+		if not pressRight && spd >= 5:		
+			spd -= 5
+			if yDown == 0:
+				if pressLeft:
+					$AnimatedSprite2D.play("skid")
+				else:
+					$AnimatedSprite2D.play("stopping")
+			
+			
+		# gravity
+	#	print("isJumping: ", isJumping, ", dblJumping: ", dblJumping, ", grounded: ", grounded, ", yDown: ", yDown)
+	#	print(xRight)
+		if not is_on_floor():
+			velocity.y += gravity * delta
+		# jump
+		if pressJump:
+			if isJumping == false:
+				sfx(jump1)
+				isJumping = true
+				velocity.y -= 300
+				
+			if isJumping == true && dblJumping == false:
+				sfx(jump2)
+				dblJumping = true
+				velocity.y = 0
+				velocity.y -= 300
+				
+			$AnimatedSprite2D.play("jump")
+	#		if $AnimatedSprite2D.frame >= 5:
+	#			$AnimatedSprite2D.set_frame(5)
+	#			$AnimatedSprite2D.pause()
+			
+		if yDown == 0 && isJumping == true || yDown2 == 0 && isJumping == true:
+			isJumping = false
+			dblJumping = false
+			
+			
+			
+	#	if isColliding():
+	#		var faceVector
+	#		var collisions
+	#		if face == "left":
+	#			faceVector = Vector2(-10, -20)
+	#		else:
+	#			faceVector = Vector2(10, -20)
+	#		collisions = move_and_collide(faceVector)
+		if get_collision_layer_value(2) == true: 
+			if $RayRight.get_collider_rid() == %pinky.get_rid() && xRight <= 0:
+				sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+				spd = -200
+				velocity.y += -100
+			if $RayLeft.get_collider_rid() == %pinky.get_rid() && xLeft >= 0:
+				sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+				spd = 200
+				velocity.y += -100
+			if $RayDown.get_collider_rid() == %pinky.get_rid() && yDown <= 1 && pressJump:
+				sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
+				velocity.y = -400
+			if $RayRight.get_collider_rid() == %pinky2.get_rid() && xRight <= 1 || $RayRight2.get_collider_rid() == %pinky2.get_rid() && xRight2 <= 1:
+				sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+				spd = -200
+				velocity.y += -100
+				isHit = true
+				hp -= 1
+				invincible()
+			if $RayLeft.get_collider_rid() == %pinky2.get_rid() && xLeft >= 1 || $RayLeft2.get_collider_rid() == %pinky2.get_rid() && xLeft2 >= 1:
+				sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+				spd = 200
+				velocity.y += -100
+				isHit = true
+				hp -= 1
+				invincible()
+			if $RayDown.get_collider_rid() == %pinky2.get_rid() && yDown <= 1 && pressJump || $RayDown2.get_collider_rid() == %pinky2.get_rid() && yDown2 <= 1 && pressJump:
+				sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
+				velocity.y = -400
 	
-	# move right
-	if Input.is_physical_key_pressed(KEY_D):
-		# if key is pressed, increase right SPEED by increments of 5 per tic until 200, 
-		# then stay at 200
-		spd += 5
-		if spd >= 200:
-			spd = 200
-	
-	# move left
-	if Input.is_physical_key_pressed(KEY_A):
-		# if key is pressed, increase left SPEED by increments of 5 per tic until 200,
-		# then stay at 200 (but is a negative value so it knows to move left)
-		spd -= 5
-		if spd <= -200:
-			spd = -200
-			
-	if not Input.is_physical_key_pressed(KEY_A) && spd < 0:
-		# if key is not pressed and spd value is less than 0 (to prevent activation 
-		# while moving right), decrease SPEED by 6 per tic
-		spd += 6
-			
-	if not Input.is_physical_key_pressed(KEY_D) && spd > 0:
-		# if key is not pressed and spd value is greater than 0 (to prevent activation 
-		# while moving left), decrease SPEED by 6 per tic
-		spd -= 6
-			
-	if spd < 4 && spd > -4 && not Input.is_physical_key_pressed(KEY_A) && not Input.is_physical_key_pressed(KEY_D) || is_on_wall():
-		# if speed is between 4 and -4 and no direction is pressed, spd variable = 0
-		# (to prevent unwanted movement while no key is pressed.)
-		# I chose 4 and -4 so the spd doesn't bounce between 6 and -6 from above
+	if hp <= 0:
 		spd = 0
-			
-	# gravity
-	if not is_on_floor():
-		# if not currently jumping
-		velocity.y += gravity * delta
-	# jump
-	if Input.is_action_just_pressed("jump") && floorDistance < 30:
-		# if jump is pressed and player is currently on the floor			
-		if spd > 100:
-			# if the spd is greater than 100, multiply spd by 1.7 
-			# (to increase jump height by your speed), and subtract that from velocity.y
-			# this is for right movement, because you need a negative number to go up
-			# (negative y is up on the screen)
-			velocity.y -= spd * 2
-		if spd < -100:
-			# if the spd is less than -100, multiply spd by 1.7 
-			# and subtract it from velocity.y (to remain negative)
-			velocity.y += spd * 2
-		if spd > -100 && spd < 100:
-			# default jump value
-			velocity.y -= jump_spd
-	
-	# run the movement function
+		velocity.y = 0
+		$AnimatedSprite2D.play("death")
+		if $AnimatedSprite2D.frame == 8:
+			$AnimatedSprite2D.pause()
+		
 	move_and_slide()

@@ -47,6 +47,14 @@ func _physics_process(delta):
 	var yUp = floor(rayUp.y - (ypos - 7))
 	var xRight = floor(rayRight.x - (xpos + 4))
 	var xLeft = floor(rayLeft.x - (xpos - 10))
+	var rayUp2 = $RayUp2.get_collision_point()
+	var rayDown2 = $RayDown2.get_collision_point()
+	var rayLeft2 = $RayLeft2.get_collision_point()
+	var rayRight2 = $RayRight2.get_collision_point()
+	var yDown2 = floor(rayDown2.y - (ypos + 18))
+	var yUp2 = floor(rayUp2.y - (ypos - 7))
+	var xRight2 = floor(rayRight2.x - (xpos + 4))
+	var xLeft2 = floor(rayLeft2.x - (xpos - 10))
 #	print("Top:", yUp, ", Bottom:", yDown, ", Left:", xLeft, ", Right:", xRight)
 #	var ypos = 10
 
@@ -173,6 +181,20 @@ func _physics_process(delta):
 		velocity.y += -100
 		print(xLeft)
 	if $RayDown.get_collider_rid() == %pinky.get_rid() && yDown <= 1 && pressJump:
+		sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
+		velocity.y = -400
+		print(yDown)
+	if $RayRight.get_collider_rid() == %pinky2.get_rid() && xRight <= 0:
+		sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+		spd = -200
+		velocity.y += -100
+		print(xRight)
+	if $RayLeft.get_collider_rid() == %pinky2.get_rid() && xLeft >= 0:
+		sfx(preload("res://sounds/458867__raclure__damage-sound-effect.mp3"))		
+		spd = 200
+		velocity.y += -100
+		print(xLeft)
+	if $RayDown.get_collider_rid() == %pinky2.get_rid() && yDown <= 1 && pressJump:
 		sfx(preload("res://sounds/536256__hoggington__metal-gauntlet-punch-3.ogg"))
 		velocity.y = -400
 		print(yDown)
